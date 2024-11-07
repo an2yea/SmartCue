@@ -1,5 +1,6 @@
 # SmartCue - Context-Aware Task Management System
 
+Smart task management app that takes the guesswork out of "what to do next" by matching your tasks with your current context using AI.
 ## Why SmartCue?
 
 In today's fast-paced world, people often struggle with:
