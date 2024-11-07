@@ -241,9 +241,17 @@ Available tasks: ${JSON.stringify(tasks)}`;
           </div>
         </div>
 
+        {/* Empty State Message - Show when no tasks exist */}
+      {tasks.length === 0 && (
+        <div className={`${styles.emptyState} ${animations.fadeIn}`}>
+          <h2>👋 Welcome to SmartCue!</h2>
+          <p>Start by adding some tasks below. Once you've added tasks, you can get AI-powered recommendations based on your current context.</p>
+        </div>
+      )}
+
         {/* Context Input */}
         <div className={`${styles.contextInput} ${animations.fadeIn} ${animations['delay-2']}`}>
-          <h2>What's your current situation?</h2>
+          <h2> Get Your Best Task for the Moment </h2>
           <textarea
             placeholder="Describe your current context (e.g., 'In a cab for 30 minutes with internet access')"
             value={userContext}
