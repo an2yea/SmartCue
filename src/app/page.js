@@ -17,6 +17,7 @@ import {
   orderBy
 } from 'firebase/firestore';
 import styles from "./page.module.css";
+import animations from './animations.module.css';
 
 export default function Home() {
   const { user, logout, loading } = useAuth();
@@ -209,8 +210,8 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <div className={styles.header}>
-          <h1>Task Tracker</h1>
+        <div className={`${styles.header} ${animations.fadeIn}`}>
+          <h1>SmartCue</h1>
           <div className={styles.userInfo}>
             <span>Welcome, {user.email}</span>
             <button onClick={logout} className={styles.logoutButton}>
@@ -219,8 +220,30 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Add Task Form */}
-        <form onSubmit={handleAddTask} className={styles.taskForm}>
+        {/* Context Input */}
+        <div className={`${styles.contextInput} ${animations.fadeIn}`}>
+          <h2>What's your current situation?</h2>
+          <textarea
+            placeholder="Describe your current context (e.g., 'In a cab for 30 minutes with internet access')"
+            value={userContext}
+            onChange={(e) => setUserContext(e.target.value)}
+          />
+          <button onClick={handleContextSubmit}>Get Task Recommendation</button>
+        </div>
+
+        {/* Recommendation Display */}
+        {recommendedTask && (
+          <div className={`${styles.recommendation} ${animations.slideIn}`}>
+            <h2>Recommended Task:</h2>
+            <div className={styles.recommendationContent}>
+              <p>{recommendedTask}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Task Form */}
+        <form onSubmit={handleAddTask} className={`${styles.taskForm} ${animations.fadeIn}`}>
+          <h2>Add New Task</h2>
           <div className={styles.formGroup}>
             <input
               type="text"
@@ -290,7 +313,7 @@ export default function Home() {
         {/* Task List */}
         <div className={styles.taskList}>
           {tasks.map((task) => (
-            <div key={task.id} className={styles.taskItem}>
+            <div key={task.id} className={`${styles.taskItem} ${animations.fadeIn}`}>
               {editingTask?.id === task.id ? (
                 // Edit Form
                 <form onSubmit={handleUpdateTask} className={styles.editForm}>
@@ -377,24 +400,6 @@ export default function Home() {
             </div>
           ))}
         </div>
-
-        {/* Context Input */}
-        <div className={styles.contextInput}>
-          <textarea
-            placeholder="Describe your current context..."
-            value={userContext}
-            onChange={(e) => setUserContext(e.target.value)}
-          />
-          <button onClick={handleContextSubmit}>Get Task Recommendation</button>
-        </div>
-
-        {/* Display Recommended Task */}
-        {recommendedTask && (
-          <div className={styles.recommendation}>
-            <h2>Recommended Task:</h2>
-            <p>{recommendedTask}</p>
-          </div>
-        )}
       </main>
     </div>
   );
