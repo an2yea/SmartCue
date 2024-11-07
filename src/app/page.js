@@ -18,6 +18,7 @@ import {
 } from 'firebase/firestore';
 import styles from "./page.module.css";
 import animations from './animations.module.css';
+import DateInput from '../components/DateInput';
 
 export default function Home() {
   const { user, logout, loading } = useAuth();
@@ -272,9 +273,7 @@ export default function Home() {
             />
           </div>
           <div className="mb-3">
-            <input
-              type="date"
-              className="form-control"
+            <DateInput
               value={newTask.deadline}
               onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
               required

@@ -379,3 +379,58 @@
     padding: 1rem;
   }
 }
+
+/* Add these styles to your existing CSS */
+.dateInput {
+  position: relative;
+  width: 100%;
+}
+
+.dateInput input[type="date"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: var(--gray-50);
+  cursor: pointer;
+  color: var(--gray-700);
+  transition: var(--transition-all);
+}
+
+/* Hide default placeholder when empty */
+.dateInput input[type="date"]:empty {
+  color: transparent;
+}
+
+/* Show custom placeholder when empty */
+.dateInput input[type="date"]:empty::before {
+  content: "Set Deadline";
+  color: var(--gray-400);
+}
+
+/* Show the date when selected */
+.dateInput input[type="date"]:valid {
+  color: var(--gray-700);
+}
+
+.dateInput input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: var(--transition-all);
+}
+
+.dateInput input[type="date"]:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+.dateInput input[type="date"]:focus {
+  border-color: var(--primary-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Remove the absolute positioning of the placeholder */
+.dateInput::before {
+  content: '';  /* Remove the content */
+}

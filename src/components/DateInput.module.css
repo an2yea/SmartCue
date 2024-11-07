@@ -1,0 +1,52 @@
+.dateInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background-color: var(--gray-50);
+  cursor: pointer;
+  color: var(--gray-700);
+  transition: all 0.2s ease;
+}
+
+.dateInput:focus {
+  border-color: var(--primary-blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.placeholder {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.dateInput::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.dateInput:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* Hide native date input placeholder */
+.dateInput::-webkit-datetime-edit-fields-wrapper {
+  display: none;
+}
+
+.dateInput.hasValue::-webkit-datetime-edit-fields-wrapper,
+.dateInput.focused::-webkit-datetime-edit-fields-wrapper {
+  display: block;
+} 
