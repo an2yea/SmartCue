@@ -1,99 +1,106 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { auth } from '../firebase/config';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth';
 import styles from './Login.module.css';
 
 export default function Login() {
-  const { signIn, signUp, signInWithGoogle, error } = useAuth();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [formError, setFormError] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormError('');
-
-    if (!email || !password) {
-      setFormError('Please fill in all fields');
-      return;
-    }
+    setError('');
 
     try {
-      if (isSignUp) {
-        await signUp(email, password);
+      if (isLogin) {
+        // Sign in existing user
+        await signInWithEmailAndPassword(auth, email, password);
       } else {
-        await signIn(email, password);
+        // Create new user
+        await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (error) {
-      setFormError(error.message);
+      console.error('Authentication error:', error);
+      setError(error.message);
     }
   };
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
     } catch (error) {
-      setFormError(error.message);
+      console.error('Google sign-in error:', error);
+      setError(error.message);
     }
   };
 
   return (
     <div className={styles.loginContainer}>
-      <h1>Welcome to Task Tracker</h1>
-      
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
-        
-        <div className={styles.formGroup}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={styles.input}
-          />
-        </div>
-        
-        <div className={styles.formGroup}>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-          />
-        </div>
+      <div className={styles.loginCard}>
+        <h1 className={styles.logo}>SmartCue</h1>
+        <p className={styles.subtitle}>
+          {isLogin ? 'Welcome back!' : 'Create your account'}
+        </p>
 
-        {formError && <p className={styles.error}>{formError}</p>}
-        
-        <button type="submit" className={styles.submitButton}>
-          {isSignUp ? 'Sign Up' : 'Sign In'}
+        {error && <div className={styles.error}>{error}</div>}
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.inputGroup}>
+            <input
+              type="email"
+              placeholder="Email"
+              className={styles.input}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className={styles.inputGroup}>
+            <input
+              type="password"
+              placeholder="Password"
+              className={styles.input}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            {isLogin ? 'Sign In' : 'Sign Up'}
+          </button>
+        </form>
+
+        <div className={styles.divider}>or</div>
+
+        <button 
+          className={styles.googleButton}
+          onClick={handleGoogleSignIn}
+          type="button"
+        >
+          <img src="/google-icon.svg" alt="Google" width="20" height="20" />
+          Continue with Google
         </button>
 
         <p className={styles.toggleText}>
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+          {isLogin ? "Don't have an account?" : "Already have an account?"}
           <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
+            onClick={() => setIsLogin(!isLogin)}
             className={styles.toggleButton}
           >
-            {isSignUp ? 'Sign In' : 'Sign Up'}
+            {isLogin ? 'Sign Up' : 'Sign In'}
           </button>
         </p>
-      </form>
-
-      <div className={styles.divider}>
-        <span>OR</span>
       </div>
-
-      <button 
-        onClick={handleGoogleSignIn}
-        className={styles.googleButton}
-      >
-        Sign in with Google
-      </button>
     </div>
   );
 } 
