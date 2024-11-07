@@ -4,13 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import Login from '../components/Login';
 import { useState, useEffect } from "react";
 import { db, generativeModel } from '../firebase/config';
-import { 
-  collection, 
-  addDoc, 
+import {
+  collection,
+  addDoc,
   deleteDoc,
   updateDoc,
-  doc, 
-  query, 
+  doc,
+  query,
   where,
   getDocs,
   onSnapshot,
@@ -67,14 +67,28 @@ export default function Home() {
     return () => unsubscribe();
   }, [user]);
 
+  const parseGeminiResponse = (response) => {
+    const taskPattern = /- Task Name: (.+?)\n- Reason: (.+?)(?=\n\n|$)/gs;
+    const tasks = [];
+    let match;
+
+    while ((match = taskPattern.exec(response)) !== null) {
+      tasks.push({
+        name: match[1],
+        reason: match[2]
+      });
+    }
+    return tasks;
+  };
+
   // Add task to Firestore
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTask.title || !newTask.deadline || !newTask.details) return;
-    
-    const hasDuration = newTask.duration.minutes || 
-                       newTask.duration.hours || 
-                       newTask.duration.days;
+
+    const hasDuration = newTask.duration.minutes ||
+      newTask.duration.hours ||
+      newTask.duration.days;
     if (!hasDuration) {
       alert("Please specify task duration in at least one unit");
       return;
@@ -88,7 +102,7 @@ export default function Home() {
       };
 
       await addDoc(collection(db, 'tasks'), taskData);
-      
+
       setNewTask({
         title: "",
         details: "",
@@ -123,10 +137,10 @@ export default function Home() {
   // Update task in Firestore
   const handleUpdateTask = async (e) => {
     e.preventDefault();
-    
-    const hasDuration = editingTask.duration.minutes || 
-                       editingTask.duration.hours || 
-                       editingTask.duration.days;
+
+    const hasDuration = editingTask.duration.minutes ||
+      editingTask.duration.hours ||
+      editingTask.duration.days;
     if (!hasDuration) {
       alert("Please specify task duration in at least one unit");
       return;
@@ -143,10 +157,10 @@ export default function Home() {
         ...editingTask,
         updatedAt: new Date().toISOString()
       };
-      
+
       await updateDoc(taskRef, taskData);
-      
-      setTasks(tasks.map(task => 
+
+      setTasks(tasks.map(task =>
         task.id === editingTask.id ? taskData : task
       ));
       setEditingTask(null);
@@ -158,15 +172,18 @@ export default function Home() {
   // Function to handle context submission
   const handleContextSubmit = async () => {
     try {
-      const input = {
-        tasks,
-        context: userContext
-      };
 
-      const prompt = "You are a task recommendation engine. You are given a list of tasks and a user's current context. Your task is to recommend a new task that the user should complete next. The user's context is: " + userContext + ". The tasks are: " + JSON.stringify(tasks);
+      const prompt = `You are a task recommendation engine. Given the following tasks and user context, recommend which tasks should be done next. Format your response exactly as follows for each task:
+- Task Name: [task title]
+- Reason: [clear explanation why this task is suitable or not for the current context]
+
+Current context: ${userContext}
+Available tasks: ${JSON.stringify(tasks)}`;
+
       const result = await generativeModel.generateContent(prompt);
       const response = result.response.text();
-      setRecommendedTask(response);
+      const parsedTasks = parseGeminiResponse(response);
+      setRecommendedTask(parsedTasks);
     } catch (error) {
       console.error("Error with Vertex AI:", error);
     }
@@ -200,7 +217,7 @@ export default function Home() {
 
   const formatDuration = (duration) => {
     if (!duration) return "Not specified";
-    
+
     return [
       duration.days && `${duration.days} days`,
       duration.hours && `${duration.hours} hours`,
@@ -215,15 +232,15 @@ export default function Home() {
           <h1>SmartCue</h1>
           <div className={styles.userInfo}>
             <span>Welcome, {user.email}</span>
-            <button 
-              onClick={logout} 
+            <button
+              onClick={logout}
               className={`${styles.button} ${styles.secondary} ${animations.scaleIn} ${animations['delay-1']}`}
             >
               Logout
             </button>
           </div>
         </div>
-        
+
         {/* Context Input */}
         <div className={`${styles.contextInput} ${animations.fadeIn} ${animations['delay-2']}`}>
           <h2>What's your current situation?</h2>
@@ -232,8 +249,8 @@ export default function Home() {
             value={userContext}
             onChange={(e) => setUserContext(e.target.value)}
           />
-          <button 
-            onClick={handleContextSubmit} 
+          <button
+            onClick={handleContextSubmit}
             className={`${styles.button} ${animations.scaleIn}`}
           >
             Get Task Recommendation
@@ -241,12 +258,15 @@ export default function Home() {
         </div>
 
         {/* Recommendation Display */}
-        {recommendedTask && (
+        {recommendedTask && recommendedTask.length > 0 && (
           <div className={`${styles.recommendation} ${animations.slideIn}`}>
-            <h2>Recommended Task:</h2>
-            <div className={styles.recommendationContent}>
-              <p>{recommendedTask}</p>
-            </div>
+            <h2>Recommended Tasks</h2>
+            {recommendedTask.map((task, index) => (
+              <div key={index} className={styles.recommendedItem}>
+                <h3>{task.name}</h3>
+                <p>{task.reason}</p>
+              </div>
+            ))}
           </div>
         )}
 
@@ -361,14 +381,14 @@ export default function Home() {
                   </p>
                 </div>
                 <div className={styles.taskButtons}>
-                  <button 
-                    onClick={() => handleDeleteTask(task.id)} 
+                  <button
+                    onClick={() => handleDeleteTask(task.id)}
                     className={`${styles.button} ${styles.secondary}`}
                   >
                     Delete
                   </button>
-                  <button 
-                    onClick={() => handleEditTask(task)} 
+                  <button
+                    onClick={() => handleEditTask(task)}
                     className={`${styles.button} ${styles.primary}`}
                   >
                     Edit

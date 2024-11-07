@@ -434,3 +434,29 @@
 .dateInput::before {
   content: '';  /* Remove the content */
 }
+.recommendation {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 800px;
+}
+
+.recommendedItem {
+  padding: 1rem;
+  border-left: 3px solid var(--primary-blue);
+  margin: 1rem 0;
+  background: var(--gray-50);
+}
+
+.recommendedItem h3 {
+  color: var(--primary-blue);
+  margin-bottom: 0.5rem;
+}
+
+.recommendedItem p {
+  color: var(--gray-600);
+  line-height: 1.5;
+}
