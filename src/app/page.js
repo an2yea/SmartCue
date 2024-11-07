@@ -3,7 +3,7 @@
 import { useAuth } from '../context/AuthContext';
 import Login from '../components/Login';
 import { useState, useEffect } from "react";
-import { db } from '../firebase/config';
+import { db, generativeModel } from '../firebase/config';
 import { 
   collection, 
   addDoc, 
@@ -34,6 +34,8 @@ export default function Home() {
       days: "",
     }
   });
+  const [userContext, setUserContext] = useState("");
+  const [recommendedTask, setRecommendedTask] = useState("");
 
   // Use real-time listener for tasks
   useEffect(() => {
@@ -83,9 +85,8 @@ export default function Home() {
         createdAt: new Date().toISOString()
       };
 
-      const docRef = await addDoc(collection(db, 'tasks'), taskData);
+      await addDoc(collection(db, 'tasks'), taskData);
       
-      setTasks([...tasks, { ...taskData, id: docRef.id }]);
       setNewTask({
         title: "",
         details: "",
@@ -105,8 +106,13 @@ export default function Home() {
   // Delete task from Firestore
   const handleDeleteTask = async (taskId) => {
     try {
+      const task = tasks.find(t => t.id === taskId);
+      if (task.userId !== user.uid) {
+        alert("You are not authorized to delete this task.");
+        return;
+      }
+
       await deleteDoc(doc(db, 'tasks', taskId));
-      setTasks(tasks.filter(task => task.id !== taskId));
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -125,6 +131,11 @@ export default function Home() {
     }
 
     try {
+      if (editingTask.userId !== user.uid) {
+        alert("You are not authorized to update this task.");
+        return;
+      }
+
       const taskRef = doc(db, 'tasks', editingTask.id);
       const taskData = {
         ...editingTask,
@@ -139,6 +150,23 @@ export default function Home() {
       setEditingTask(null);
     } catch (error) {
       console.error("Error updating task:", error);
+    }
+  };
+
+  // Function to handle context submission
+  const handleContextSubmit = async () => {
+    try {
+      const input = {
+        tasks,
+        context: userContext
+      };
+
+      const prompt = "You are a task recommendation engine. You are given a list of tasks and a user's current context. Your task is to recommend a new task that the user should complete next. The user's context is: " + userContext + ". The tasks are: " + JSON.stringify(tasks);
+      const result = await generativeModel.generateContent(prompt);
+      const response = result.response.text();
+      setRecommendedTask(response);
+    } catch (error) {
+      console.error("Error with Vertex AI:", error);
     }
   };
 
@@ -349,6 +377,24 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* Context Input */}
+        <div className={styles.contextInput}>
+          <textarea
+            placeholder="Describe your current context..."
+            value={userContext}
+            onChange={(e) => setUserContext(e.target.value)}
+          />
+          <button onClick={handleContextSubmit}>Get Task Recommendation</button>
+        </div>
+
+        {/* Display Recommended Task */}
+        {recommendedTask && (
+          <div className={styles.recommendation}>
+            <h2>Recommended Task:</h2>
+            <p>{recommendedTask}</p>
+          </div>
+        )}
       </main>
     </div>
   );
