@@ -214,21 +214,29 @@ export default function Home() {
           <h1>SmartCue</h1>
           <div className={styles.userInfo}>
             <span>Welcome, {user.email}</span>
-            <button onClick={logout} className={styles.logoutButton}>
+            <button 
+              onClick={logout} 
+              className={`${styles.button} ${styles.secondary} ${animations.scaleIn} ${animations['delay-1']}`}
+            >
               Logout
             </button>
           </div>
         </div>
         
         {/* Context Input */}
-        <div className={`${styles.contextInput} ${animations.fadeIn}`}>
+        <div className={`${styles.contextInput} ${animations.fadeIn} ${animations['delay-2']}`}>
           <h2>What's your current situation?</h2>
           <textarea
             placeholder="Describe your current context (e.g., 'In a cab for 30 minutes with internet access')"
             value={userContext}
             onChange={(e) => setUserContext(e.target.value)}
           />
-          <button onClick={handleContextSubmit}>Get Task Recommendation</button>
+          <button 
+            onClick={handleContextSubmit} 
+            className={`${styles.button} ${animations.scaleIn}`}
+          >
+            Get Task Recommendation
+          </button>
         </div>
 
         {/* Recommendation Display */}
@@ -244,28 +252,38 @@ export default function Home() {
         {/* Task Form */}
         <form onSubmit={handleAddTask} className={`${styles.taskForm} ${animations.fadeIn}`}>
           <h2>Add New Task</h2>
-          <div className={styles.formGroup}>
+          <div className="mb-3">
             <input
               type="text"
+              className="form-control"
               placeholder="Task title"
-              value={newTask.title || ""}
+              value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
               required
             />
+          </div>
+          <div className="mb-3">
             <textarea
+              className="form-control"
               placeholder="Task details"
-              value={newTask.details || ""}
+              value={newTask.details}
               onChange={(e) => setNewTask({ ...newTask, details: e.target.value })}
               required
             />
+          </div>
+          <div className="mb-3">
             <input
               type="date"
-              value={newTask.deadline || ""}
+              className="form-control"
+              value={newTask.deadline}
               onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
               required
             />
+          </div>
+          <div className="mb-3">
             <select
-              value={newTask.complexity || ""}
+              className="form-select"
+              value={newTask.complexity}
               onChange={(e) => setNewTask({ ...newTask, complexity: e.target.value })}
               required
             >
@@ -274,40 +292,45 @@ export default function Home() {
                 <option key={option} value={option}>{option}</option>
               ))}
             </select>
-            <div className={styles.durationInputs}>
-              <input
-                type="number"
-                min="0"
-                placeholder="Minutes"
-                value={newTask.duration.minutes || ""}
-                onChange={(e) => setNewTask({
-                  ...newTask,
-                  duration: { ...newTask.duration, minutes: e.target.value }
-                })}
-              />
-              <input
-                type="number"
-                min="0"
-                placeholder="Hours"
-                value={newTask.duration.hours || ""}
-                onChange={(e) => setNewTask({
-                  ...newTask,
-                  duration: { ...newTask.duration, hours: e.target.value }
-                })}
-              />
-              <input
-                type="number"
-                min="0"
-                placeholder="Days"
-                value={newTask.duration.days || ""}
-                onChange={(e) => setNewTask({
-                  ...newTask,
-                  duration: { ...newTask.duration, days: e.target.value }
-                })}
-              />
-            </div>
-            <button type="submit">Add Task</button>
           </div>
+          <div className={`${styles.durationInputs} mb-3`}>
+            <input
+              type="number"
+              className="form-control"
+              min="0"
+              placeholder="Minutes"
+              value={newTask.duration.minutes}
+              onChange={(e) => setNewTask({
+                ...newTask,
+                duration: { ...newTask.duration, minutes: e.target.value }
+              })}
+            />
+            <input
+              type="number"
+              className="form-control"
+              min="0"
+              placeholder="Hours"
+              value={newTask.duration.hours}
+              onChange={(e) => setNewTask({
+                ...newTask,
+                duration: { ...newTask.duration, hours: e.target.value }
+              })}
+            />
+            <input
+              type="number"
+              className="form-control"
+              min="0"
+              placeholder="Days"
+              value={newTask.duration.days}
+              onChange={(e) => setNewTask({
+                ...newTask,
+                duration: { ...newTask.duration, days: e.target.value }
+              })}
+            />
+          </div>
+          <button type="submit" className={`${styles.button} ${styles.primary}`}>
+            Add Task
+          </button>
         </form>
 
         {/* Task List */}
