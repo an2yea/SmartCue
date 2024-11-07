@@ -171,42 +171,59 @@
 
 .taskItem {
   background: var(--white);
-  border-radius: 16px;
-  box-shadow: var(--shadow-sm);
-  padding: 1.5rem;
-  transition: var(--transition-all);
+  border-radius: 12px;
   border: 1px solid var(--gray-200);
-  display: flex;
-  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
 .taskItem:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1);
+  border-color: var(--primary-light);
+}
+
+.taskHeader {
+  background: var(--primary-blue);
+  color: var(--white);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.taskHeader h3 {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.taskContent {
+  padding: 1.5rem;
 }
 
 .taskInfo {
-  flex: 1;
-}
-
-.taskInfo h3 {
-  color: var(--gray-700);
-  font-weight: 600;
-  font-size: 1.1rem;
   margin-bottom: 1rem;
 }
 
 .taskInfo p {
   color: var(--gray-600);
   font-size: 0.95rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.taskLabel {
+  font-weight: 500;
+  color: var(--gray-700);
+  min-width: 80px;
 }
 
 .taskButtons {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--gray-200);
 }

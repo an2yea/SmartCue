@@ -336,90 +336,46 @@ export default function Home() {
         {/* Task List */}
         <div className={styles.taskList}>
           {tasks.map((task) => (
-            <div key={task.id} className={`${styles.taskItem} ${animations.fadeIn}`}>
-              {editingTask?.id === task.id ? (
-                // Edit Form
-                <form onSubmit={handleUpdateTask} className={styles.editForm}>
-                  <input
-                    type="text"
-                    value={editingTask.title || ""}
-                    onChange={(e) => setEditingTask({ ...editingTask, title: e.target.value })}
-                    required
-                  />
-                  <textarea
-                    value={editingTask.details || ""}
-                    onChange={(e) => setEditingTask({ ...editingTask, details: e.target.value })}
-                    required
-                  />
-                  <input
-                    type="date"
-                    value={editingTask.deadline || ""}
-                    onChange={(e) => setEditingTask({ ...editingTask, deadline: e.target.value })}
-                    required
-                  />
-                  <select
-                    value={editingTask.complexity || ""}
-                    onChange={(e) => setEditingTask({ ...editingTask, complexity: e.target.value })}
-                    required
+            <div key={task.id} className={styles.taskItem}>
+              <div className={styles.taskHeader}>
+                <h3>{task.title}</h3>
+              </div>
+              <div className={styles.taskContent}>
+                <div className={styles.taskInfo}>
+                  <p>
+                    <span className={styles.taskLabel}>Details:</span>
+                    {task.details}
+                  </p>
+                  <p>
+                    <span className={styles.taskLabel}>Deadline:</span>
+                    {new Date(task.deadline).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span className={styles.taskLabel}>Complexity:</span>
+                    {task.complexity}
+                  </p>
+                  <p>
+                    <span className={styles.taskLabel}>Duration:</span>
+                    {task.duration.days > 0 && `${task.duration.days} days `}
+                    {task.duration.hours > 0 && `${task.duration.hours} hours `}
+                    {task.duration.minutes > 0 && `${task.duration.minutes} minutes`}
+                  </p>
+                </div>
+                <div className={styles.taskButtons}>
+                  <button 
+                    onClick={() => handleDeleteTask(task.id)} 
+                    className={`${styles.button} ${styles.secondary}`}
                   >
-                    <option value="">Select Complexity</option>
-                    {complexityOptions.map(option => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
-                  <div className={styles.durationInputs}>
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="Minutes"
-                      value={editingTask.duration.minutes || ""}
-                      onChange={(e) => setEditingTask({
-                        ...editingTask,
-                        duration: { ...editingTask.duration, minutes: e.target.value }
-                      })}
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="Hours"
-                      value={editingTask.duration.hours || ""}
-                      onChange={(e) => setEditingTask({
-                        ...editingTask,
-                        duration: { ...editingTask.duration, hours: e.target.value }
-                      })}
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      placeholder="Days"
-                      value={editingTask.duration.days || ""}
-                      onChange={(e) => setEditingTask({
-                        ...editingTask,
-                        duration: { ...editingTask.duration, days: e.target.value }
-                      })}
-                    />
-                  </div>
-                  <div className={styles.editButtons}>
-                    <button type="submit">Save</button>
-                    <button type="button" onClick={() => setEditingTask(null)}>Cancel</button>
-                  </div>
-                </form>
-              ) : (
-                // Task Display
-                <>
-                  <div className={styles.taskInfo}>
-                    <h3>{task.title}</h3>
-                    <p>Details: {task.details || "No details provided"}</p>
-                    <p>Deadline: {new Date(task.deadline).toLocaleDateString()}</p>
-                    <p>Complexity: {task.complexity || "Not specified"}</p>
-                    <p>Duration: {formatDuration(task.duration)}</p>
-                  </div>
-                  <div className={styles.taskButtons}>
-                    <button onClick={() => handleEditClick(task)}>Edit</button>
-                    <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-                  </div>
-                </>
-              )}
+                    Delete
+                  </button>
+                  <button 
+                    onClick={() => handleEditTask(task)} 
+                    className={`${styles.button} ${styles.primary}`}
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
