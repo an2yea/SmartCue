@@ -19,6 +19,7 @@ import {
 import styles from "./page.module.css";
 import animations from './animations.module.css';
 import DateInput from '../components/DateInput';
+import { TASK_RECOMMENDATION_PROMPT } from '../prompts/taskRecommendation';
 
 export default function Home() {
   const { user, logout, loading } = useAuth();
@@ -173,13 +174,7 @@ export default function Home() {
   const handleContextSubmit = async () => {
     try {
 
-      const prompt = `You are a task recommendation engine. Given the following tasks and user context, recommend which tasks should be done next. Format your response exactly as follows for each task:
-- Task Name: [task title]
-- Reason: [clear explanation why this task is suitable or not for the current context]
-
-Current context: ${userContext}
-Available tasks: ${JSON.stringify(tasks)}`;
-
+      const prompt = `${TASK_RECOMMENDATION_PROMPT} \n Current context: ${userContext} \n Available tasks: ${JSON.stringify(tasks)}`;
       const result = await generativeModel.generateContent(prompt);
       const response = result.response.text();
       const parsedTasks = parseGeminiResponse(response);
@@ -250,7 +245,8 @@ Available tasks: ${JSON.stringify(tasks)}`;
       )}
 
         {/* Context Input */}
-        <div className={`${styles.contextInput} ${animations.fadeIn} ${animations['delay-2']}`}>
+        {tasks.length !== 0 && (
+          <div className={`${styles.contextInput} ${animations.fadeIn} ${animations['delay-2']}`}>
           <h2> Get Your Best Task for the Moment </h2>
           <textarea
             placeholder="Describe your current context (e.g., 'In a cab for 30 minutes with internet access')"
@@ -261,9 +257,10 @@ Available tasks: ${JSON.stringify(tasks)}`;
             onClick={handleContextSubmit}
             className={`${styles.button} ${animations.scaleIn}`}
           >
-            Get Task Recommendation
-          </button>
-        </div>
+              Get Task Recommendation
+            </button>
+          </div>
+        )}
 
         {/* Recommendation Display */}
         {recommendedTask && recommendedTask.length > 0 && (
